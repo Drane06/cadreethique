@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier 3 : Éthique de l'IA Générative en Éducation (QCM Corrigé)</title>
+    <style>
+        /* Couleurs réajustées pour correspondre au thème vert/menthe de l'atelier original */
+        :root {
+            --primary: #2d8659;            /* Vert principal */
+            --primary-light: #4aaf73;      /* Vert clair */
+            --primary-dark: #1a4d2e;       /* Vert foncé */
+            --accent-blue: #4a90e2;        /* Accent bleu (conservé pour la clarté) */
+            --accent-orange: #f39c12;      /* Accent orange (conservé pour les risques) */
+            --accent-purple: #9b59b6;      /* Accent violet (conservé pour l'équité/règles) */
+            --accent-green-dark: #1e7047;  /* Vert foncé pour la frugalité */
+            --accent-red: #e74c3c;         /* Rouge pour le danger/interdiction */
+            --text: #333;
+            --text-light: #666;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --border-radius: 15px;
+            --transition: all 0.3s ease;
+            --success-color: #27ae60;
+            --error-color: #c0392b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #2d5f3f 50%, #3d7552 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(155, 89, 182, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 159, 67, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+        header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(45, 134, 89, 0.2);
+        }
+        h1 {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        .subtitle { color: var(--text-light); font-size: 1.1em; line-height: 1.6; }
+        .section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid rgba(45, 134, 89, 0.2);
+            display: none;
+        }
+        .section.active { display: block; animation: fadeIn 0.8s ease-out; }
+        .section h2 {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .instruction {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(45, 134, 89, 0.1);
+            border-radius: 10px;
+            color: var(--text-light);
+            line-height: 1.6;
+            border-left: 5px solid var(--primary);
+        }
+        
+        /* Styles pour les Piliers Éthiques (Partie 2) */
+        .schema-step {
+            position: relative;
+            padding: 25px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, rgba(45, 134, 89, 0.1), rgba(45, 134, 89, 0.05));
+            border-left: 5px solid var(--primary);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .schema-step:hover { transform: translateX(10px); box-shadow: 0 5px 20px rgba(45, 134, 89, 0.2); }
+        .schema-step-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(45, 134, 89, 0.2);
+            line-height: 1.6;
+            color: #555;
+        }
+        .schema-step.active .schema-step-content { display: block; animation: fadeIn 0.5s ease-out; }
+        .step-icon-container {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 15px;
+        }
+        
+        /* Styles pour la Partie 3 : Cas Pratiques (QCM) */
+        .case-study {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(45, 134, 89, 0.2);
+        }
+        .case-scenario strong { color: var(--primary-dark); font-size: 1.1em; }
+        .qcm-question { 
+            margin: 15px 0 20px; 
+            padding-left: 15px; 
+            border-left: 3px solid var(--accent-orange); 
+            color: var(--text); 
+            line-height: 1.5; 
+            font-style: italic;
+            font-weight: 600;
+        }
+        
+        .qcm-options label {
+            display: block;
+            background: #f8f8f8;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, border 0.2s ease;
+            border: 1px solid #eee;
+            line-height: 1.4;
+        }
+        .qcm-options label:hover {
+            background: #f0f0f0;
+            border-color: var(--primary-light);
+        }
+        .qcm-options input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+        
+        .feedback-area {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+            font-size: 0.95em;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .feedback-area.correct {
+            background: #e6f7ee;
+            border-left: 5px solid var(--success-color);
+            color: var(--success-color);
+        }
+        .feedback-area.incorrect {
+            background: #fef0f0;
+            border-left: 5px solid var(--error-color);
+            color: var(--error-color);
+        }
+        .feedback-area p { margin-top: 8px; color: var(--text-dark); }
+        .feedback-area strong.result { font-size: 1.1em; }
+        .feedback-area .explanation { color: var(--text); font-style: italic; margin-top: 10px; }
+        .feedback-area .explanation span { font-weight: 700; color: var(--accent-blue); }
+        .feedback-area ul { list-style-type: '➡️ '; padding-left: 20px; margin-top: 10px; }
+
+
+        .action-btn, .validate-btn {
+            display: block;
+            margin: 25px auto;
+            padding: 15px 45px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(45, 134, 89, 0.3);
+        }
+        .action-btn:hover, .validate-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(45, 134, 89, 0.4); }
+        .validate-btn {
+            margin: 15px 0 0;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 20px;
+            width: auto;
+            display: block;
+        }
+        
+        /* Styles pour les autres parties (Partie 1 & 6, etc.) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .section { padding: 20px; }
+            #category-target-area { grid-template-columns: 1fr; }
+        }
+        
+        /* Styles pour l'Activité de Classification (Partie 1) */
+        #classification-game {
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: rgba(45, 134, 89, 0.05);
+        }
+        #risk-source-area {
+            min-height: 100px;
+            padding: 15px;
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .risk-capsule {
+            display: inline-block;
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--text-light);
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: grab;
+            transition: var(--transition);
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .risk-capsule:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .risk-capsule.dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+            border: 2px dashed var(--accent-blue);
+        }
+        .capsule-container.drag-over {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 2px dashed var(--accent-blue);
+        }
+        #risk-source-area.drag-over {
+            background-color: rgba(45, 134, 89, 0.1);
+            border: 2px dashed var(--primary);
+        }
+        #category-target-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .category-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            border-top: 5px solid var(--cat-color); 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .risk-capsule[data-status="incorrect"] { background-color: #fdd; border-color: var(--accent-red); color: var(--accent-red); }
+        .risk-capsule[data-status="correct"] { background-color: #dfd; border-color: var(--primary-light); color: var(--primary-dark); }
+
+        /* Styles pour la Partie 6 (Réflexion disciplinaire) - SANS CHAMPS */
+        .discipline-reflection-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .reflection-prompt {
+            padding: 25px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--accent-blue);
+        }
+        .reflection-prompt h3 {
+            color: var(--accent-blue);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        .reflection-prompt p {
+             margin-top: 10px;
+             padding: 15px;
+             border-radius: 8px;
+             background-color: #f4f8ff; /* Couleur de fond pour le contenu */
+             border: 1px dashed #c1d9ff;
+             line-height: 1.5;
+             font-style: italic;
+             color: var(--text-light);
+        }
+        .reflection-prompt.activity-idea {
+            border-left-color: var(--accent-orange);
+        }
+        .reflection-prompt.activity-idea h3 {
+            color: var(--accent-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Atelier 3 : Éthique de l'IA Générative en Éducation</h1>
+            <p class="subtitle">Comprendre les défis et appliquer les principes du Cadre d'Usage (Juin 2025)</p>
+        </header>
+
+        <!-- PARTIE 1 : LES GRANDS DÉFIS ÉTHIQUES (Glisser-Déposer) -->
+        <div class="section active" id="section1">
+            <h2>🌍 Partie 1 : Les Grands Défis Éthiques de l'IA</h2>
+            <div class="instruction">
+                <strong>🎯 Objectif :</strong> **Glissez-déposez** les exemples de risques dans la bonne catégorie de défi éthique.
+            </div>
+            
+            <div id="classification-game">
+                <div id="risk-source-area" class="risks-area capsule-container">
+                    <p style="font-weight: 600; color: var(--text-light); margin-bottom: 10px;">Exemples de Risques à Classer (Glissez-moi) :</p>
+                    <div class="risk-capsule" draggable="true" data-risk-id="plagiat" data-correct-category="security">Authenticité des Travaux (Plagiat)</div>
+                    <div class="risk-capsule" draggable="true" data-risk-id="bias" data-correct-category="bias">Reproduction des stéréotypes</div>
+                    <div class="risk-capsule" draggable="true" data-risk-id="confidentiality" data-correct-category="security">Fuite de données personnelles</div>
+                    <div class="risk-capsule" draggable="true" data-risk-id="hallucination" data-correct-category="transparency">"Hallucinations" et Inexactitude</div>
+                    <div class="risk-capsule" draggable="true" data-risk-id="dependence" data-correct-category="social">Risque de dépendance cognitive</div>
+                    <div class="risk-capsule" draggable="true" data-risk-id="energy" data-correct-category="social">Coût Énergétique Élevé</div>
+                </div>
+
+                <div id="category-target-area">
+                    <div class="category-box" id="category-bias" data-category-id="bias" style="--cat-color: var(--accent-orange);">
+                        <div class="category-header"><span class="step-icon-container">B</span><span class="category-title">Biais et Discrimination</span></div>
+                        <div class="capsule-container"></div>
+                    </div>
+                    <div class="category-box" id="category-transparency" data-category-id="transparency" style="--cat-color: var(--accent-blue);">
+                        <div class="category-header"><span class="step-icon-container">❓</span><span class="category-title">Transparence et Explicabilité</span></div>
+                        <div class="capsule-container"></div>
+                    </div>
+                    <div class="category-box" id="category-social" data-category-id="social" style="--cat-color: var(--accent-purple);">
+                        <div class="category-header"><span class="step-icon-container">🌍</span><span class="category-title">Impact Social et Environnemental</span></div>
+                        <div class="capsule-container"></div>
+                    </div>
+                    <div class="category-box" id="category-security" data-category-id="security" style="--cat-color: var(--primary);">
+                        <div class="category-header"><span class="step-icon-container">🛡️</span><span class="category-title">Sécurité et Fiabilité</span></div>
+                        <div class="capsule-container"></div>
+                    </div>
+                </div>
+
+                <div id="feedback-message" style="margin-top: 20px; text-align: center; font-weight: 700; min-height: 20px;"></div>
+                <button id="check-answers-btn" class="validate-btn" onclick="checkAnswers()" style="margin: 25px auto;">Vérifier mes réponses</button>
+            </div>
+            
+            <button class="action-btn" onclick="goToSection(2)">Passer aux Piliers Éthiques ➡️</button>
+        </div>
+
+        <!-- PARTIE 2 : RECOMMANDATIONS ÉTHIQUES (p. 8 du Cadre d'Usage) -->
+        <div class="section" id="section2">
+            <h2>📜 Partie 2 : Les 5 Piliers Éthiques du Cadre National</h2>
+            <div class="instruction">
+                <strong>🎯 Objectif :</strong> Découvrir les **Recommandations éthiques et déontologiques** (p. 8) qui encadrent l'usage de l'IA générative. Cliquez sur chaque pilier pour en savoir plus.
+            </div>
+            <div style="max-width: 800px; margin: 40px auto; padding: 40px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                <div class="schema-step" onclick="toggleStep(this)">
+                    <span class="step-icon-container" style="background: linear-gradient(135deg, var(--accent-blue), #3a7bc8);">1</span>
+                    <span style="font-size: 1.3em; font-weight: 700; color: var(--accent-blue);">👤 Le Principe de Responsabilité</span>
+                    <div class="schema-step-content">
+                        <p><strong>L'enseignant reste au centre :</strong> C'est l'enseignant qui définit l'objectif pédagogique, la façon dont l'IA est utilisée, et qui valide les contenus produits.</p>
+                        <p style="margin-top: 10px;">⚠️ **Conséquence pour l'élève :** L'élève est **responsable** du contenu qu'il produit, même s'il utilise l'IA. Il doit être capable de justifier et de citer sa source (l'outil IA).</p>
+                    </div>
+                </div>
+                <div class="schema-step" onclick="toggleStep(this)">
+                    <span class="step-icon-container" style="background: linear-gradient(135deg, var(--primary), var(--primary-light));">2</span>
+                    <span style="font-size: 1.3em; font-weight: 700; color: var(--primary);">🔍 Le Principe de Transparence (Explicabilité)</span>
+                    <div class="schema-step-content">
+                        <p><strong>Clarté sur l'usage :</strong> L'utilisation d'un outil d'IA doit être explicitement déclarée par l'élève, l'enseignant ou l'institution.</p>
+                        <p style="margin-top: 10px;">💡 **Règle :** Si l'IA est utilisée, l'élève doit pouvoir **décrire son prompt** (sa requête) et **évaluer de manière critique** la réponse obtenue (vérification des sources, identification des biais).</p>
+                    </div>
+                </div>
+                <div class="schema-step" onclick="toggleStep(this)">
+                    <span class="step-icon-container" style="background: linear-gradient(135deg, var(--accent-orange), #e67e22);">3</span>
+                    <span style="font-size: 1.3em; font-weight: 700; color: var(--accent-orange);">🛡️ Le Principe de Protection des Données</span>
+                    <div class="schema-step-content">
+                        <p><strong>Conformité :</strong> Les outils d'IA utilisés doivent garantir la protection des données personnelles des utilisateurs, en accord avec le **RGPD**.</p>
+                        <p style="margin-top: 10px;">🚫 **Interdiction :** Il est formellement déconseillé d'entrer des **données personnelles** ou des **informations confidentielles** dans des outils d'IA non agréés par l'institution.</p>
+                    </div>
+                </div>
+                <div class="schema-step" onclick="toggleStep(this)">
+                    <span class="step-icon-container" style="background: linear-gradient(135deg, var(--accent-purple), #8e44ad);">4</span>
+                    <span style="font-size: 1.3em; font-weight: 700; color: var(--accent-purple);">⚖️ Le Principe d'Équité et d'Inclusion</span>
+                    <div class="schema-step-content">
+                        <p><strong>Accès égalitaire :</strong> L'usage de l'IA en classe doit être pensé de manière à ne pas pénaliser les élèves qui n'auraient pas accès à ces outils à la maison.</p>
+                        <p style="margin-top: 10px;">🌐 **Inclusion :** L'IA générative peut être un formidable outil pour l'**accessibilité**.</p>
+                    </div>
+                </div>
+                 <div class="schema-step" onclick="toggleStep(this)" style="border-left: 5px solid var(--accent-green-dark);">
+                    <span class="step-icon-container" style="background: linear-gradient(135deg, var(--accent-green-dark), #3cb371);">5</span>
+                    <span style="font-size: 1.3em; font-weight: 700; color: var(--accent-green-dark);">🌿 Le Principe de Frugalité et Sobriété</span>
+                    <div class="schema-step-content">
+                        <p><strong>Impact Environnemental :</strong> Les modèles d'IA sont très gourmands en énergie. Adopter une approche de **sobriété numérique** est essentiel.</p>
+                        <p style="margin-top: 10px;">📉 **Règle :** Utiliser l'IA de manière ciblée, uniquement lorsque la **valeur ajoutée pédagogique** est avérée.</p>
+                    </div>
+                </div>
+            </div>
+            <button class="action-btn" onclick="goToSection(3)">Continuer vers les Cas Pratiques (QCM) 📚</button>
+        </div>
+
+        <!-- PARTIE 3 : CAS PRATIQUES ET ÉVALUATION (QCM avec Feedback) -->
+        <div class="section" id="section3">
+            <h2>📚 Partie 3 : Cas Pratiques et Évaluation</h2>
+            <div class="instruction">
+                <strong>🎯 Consigne :</strong> Répondez aux QCM en vous basant sur les 5 Piliers Éthiques du Cadre d'Usage. Le feedback vous apportera la réponse détaillée.
+            </div>
+
+            <!-- CAS 1 : L'ESSAI GÉNÉRÉ -->
+            <div class="case-study">
+                <div class="case-scenario">
+                    <strong>📝 Cas 1 : L'essai généré</strong>
+                    <div class="qcm-question">
+                        Face à l'essai suspect d'un élève (syntaxe parfaite mais absence d'originalité), quelle est la meilleure approche pédagogique conforme au Cadre d'Usage (p. 10 : Devoirs et évaluations) ?
+                    </div>
+                    <div class="qcm-options" id="qcm-options-1">
+                        <label><input type="radio" name="qcm1" value="A"> A) Utiliser un logiciel détecteur d'IA pour prouver la fraude et sanctionner.</label>
+                        <label><input type="radio" name="qcm1" value="B"> B) Exiger que l'élève réécrive le travail, sans utiliser l'IA, pour s'assurer de l'authenticité.</label>
+                        <label><input type="radio" name="qcm1" value="C"> C) Transformer l'évaluation en demandant à l'élève de critiquer le texte ou de justifier oralement son processus de création.</label>
+                        <label><input type="radio" name="qcm1" value="D"> D) Ne pas tenir compte du doute et noter l'essai sur la seule qualité du contenu rendu.</label>
+                    </div>
+                    <button class="validate-btn" onclick="submitQCM(1)">Valider ma réponse</button>
+                    <div class="feedback-area" id="feedback-1"></div>
+                </div>
+            </div>
+
+            <!-- CAS 2 : CORRECTION DE COPIE ANONYME -->
+            <div class="case-study">
+                <div class="case-scenario">
+                    <strong>⚖️ Cas 2 : Correction de copie anonyme</strong>
+                    <div class="qcm-question">
+                        Un enseignant utilise un LLM public non agréé pour corriger des copies. Il retire le nom mais laisse le numéro d'identification (INE). Quel principe éthique majeur est enfreint et quel est le risque légal principal ?
+                    </div>
+                    <div class="qcm-options" id="qcm-options-2">
+                        <label><input type="radio" name="qcm2" value="A"> A) Le Principe de Transparence, car l'élève n'est pas informé que sa copie est traitée par une IA.</label>
+                        <label><input type="radio" name="qcm2" value="B"> B) Le Principe de Frugalité, car le coût énergétique pour corriger 30 copies est excessif.</label>
+                        <label><input type="radio" name="qcm2" value="C"> C) Le Principe de Responsabilité, car l'enseignant délègue la notation à une machine non humaine.</label>
+                        <label><input type="radio" name="qcm2" value="D"> D) Le Principe de Protection des Données, car l'INE est une donnée personnelle sensible transmise à un tiers non conforme RGPD.</label>
+                    </div>
+                    <button class="validate-btn" onclick="submitQCM(2)">Valider ma réponse</button>
+                    <div class="feedback-area" id="feedback-2"></div>
+                </div>
+            </div>
+
+            <!-- CAS 3 : FRUGALITÉ ET IMPACT ÉNERGÉTIQUE -->
+            <div class="case-study">
+                <div class="case-scenario">
+                    <strong>🌎 Cas 3 : Frugalité et Impact Énergétique des LLM</strong>
+                    <div class="qcm-question">
+                        Comment l'enseignant doit-il encadrer l'usage de l'IA pour respecter le Principe de Frugalité et Sobriété Numérique (Principe 5) ?
+                    </div>
+                    <div class="qcm-options" id="qcm-options-3">
+                        <label><input type="radio" name="qcm3" value="A"> A) Interdire l'usage de l'IA pour tous les travaux et n'utiliser que les outils intégrés à l'ENT.</label>
+                        <label><input type="radio" name="qcm3" value="B"> B) N'autoriser l'IA que si la valeur ajoutée pédagogique est clairement justifiée et former à l'efficacité des prompts.</label>
+                        <label><input type="radio" name="qcm3" value="C"> C) Limiter le temps d'utilisation de l'IA à une courte durée par séance de cours (ex. 10 minutes maximum).</label>
+                        <label><input type="radio" name="qcm3" value="D"> D) Se concentrer sur l'IA seulement dans les disciplines scientifiques, car l'impact environnemental y est mieux compris.</label>
+                    </div>
+                    <button class="validate-btn" onclick="submitQCM(3)">Valider ma réponse</button>
+                    <div class="feedback-area" id="feedback-3"></div>
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="goToSection(4)">Passer à la Création des Logos 🎨</button>
+        </div>
+
+        <!-- PARTIE 4 : NOUVELLE CONSIGNE DE CRÉATION DES LOGOS -->
+        <div class="section" id="section4">
+            <h2>🎨 Partie 4 : Consigne de Création - Logos sur les usages de l’intelligence artificielle générative</h2>
+            <div class="instruction">
+                Vous allez imaginer et concevoir **trois logos distincts**, chacun représentant un niveau différent d’utilisation de l’intelligence artificielle générative.
+            </div>
+
+            <div style="margin: 20px auto; max-width: 900px;">
+                
+                <div class="case-study" style="border-left: 5px solid var(--primary);">
+                    <h3><span class="step-icon-container">✅</span> Travail réalisé sans intelligence artificielle générative</h3>
+                    <p class="subtitle" style="font-size: 1em;">Contenu produit entièrement par un humain, sans aucune assistance d’un outil d’IA générative.</p>
+                </div>
+
+                <div class="case-study" style="border-left: 5px solid var(--accent-blue);">
+                    <h3><span class="step-icon-container" style="background: var(--accent-blue);">💡</span> Travail réalisé avec l’aide d’une intelligence artificielle générative</h3>
+                    <p class="subtitle" style="font-size: 1em;">Contenu partiellement conçu à l’aide d’un outil d’IA (suggestions, corrections…), mais reste le fruit d’une réflexion et d’un choix humain.</p>
+                </div>
+                
+                <div class="case-study" style="border-left: 5px solid var(--accent-orange);">
+                    <h3><span class="step-icon-container" style="background: var(--accent-orange);">🤖</span> Travail généré par une intelligence artificielle générative</h3>
+                    <p class="subtitle" style="font-size: 1em;">Contenu majoritairement, voire totalement, produit par un outil d’IA générative, sans intervention créative directe de l’utilisateur.</p>
+                </div>
+
+                <div class="reflection-prompt" style="margin-top: 30px; border-left-color: var(--accent-red);">
+                    <strong>Étapes :</strong> Rédigez un court prompt explicatif pour chaque logo (Intention, Choix graphiques, Message) avant de passer à la production.
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="goToSection(5)">Synthèse et Bilan Final 📝</button>
+        </div>
+        
+        <!-- PARTIE 5 : SYNTHÈSE ET BILAN -->
+        <div class="section" id="section5">
+            <h2>📝 Partie 5 : Bilan - Vers une Pédagogie Critique</h2>
+            <div class="instruction">
+                <strong>🎯 Objectif :</strong> Conclure sur la posture à adopter face à l'IA générative en éducation.
+            </div>
+
+            <div class="synthesis-section" style="padding: 25px; border-radius: 15px; background: rgba(45, 134, 89, 0.1); border-left: 5px solid var(--primary);">
+                <h3 style="color: var(--primary); font-size: 1.5em; margin-bottom: 20px; text-align: center;">La posture recommandée : De l'interdiction à la maîtrise critique</h3>
+                
+                <p>Le Cadre d'Usage de l'IA est un **guide de formation et d'encadrement**. L'objectif est d'amener l'élève à devenir un **citoyen éclairé du numérique** capable d'utiliser l'IA comme un outil, tout en restant vigilant et critique face à ses limites (biais, "hallucinations").</p>
+                
+                <p>La **Responsabilité de l'enseignant** est cruciale. Elle consiste à remodeler les activités pour que l'IA serve de **partenaire d'apprentissage** plutôt que de **substitut à la pensée**.</p>
+
+                <p style="font-weight: 600; margin-top: 20px;">Le point essentiel à retenir :</p>
+                <div style="background: white; padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    En pédagogie, l'IA générative doit être considérée comme un objet d'enseignement, un outil au service des apprentissages, et non comme une fin en soi.
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="goToSection(6)">Passer à la Réflexion Disciplinaire 🧠</button>
+        </div>
+        
+        <!-- PARTIE 6 : RÉFLEXION DISCIPLINAIRE (Sans champs de texte) -->
+        <div class="section" id="section6">
+            <h2>🧠 Partie 6 : Mon Rôle Disciplinaire dans l'Acculturation à l'IA</h2>
+            <div class="instruction">
+                <strong>🎯 Objectif :</strong> Réfléchir à la mise en œuvre concrète de l'acculturation à l'IA dans votre enseignement, en s'appuyant sur la progressivité du cycle.
+            </div>
+
+            <div class="discipline-reflection-container">
+                
+                <div class="reflection-prompt">
+                    <h3>1. Contribution à l'Acculturation selon la Progressivité du Cycle (6ème à 3ème)</h3>
+                    <p class="subtitle">Expliquez, selon votre discipline, comment vous pouvez contribuer à acculturer les élèves à l’intelligence artificielle, en s’appuyant sur la **progressivité du cycle (6e à 3e)**.</p>
+                    <p>Exemple pour les Lettres : En 6e, sensibilisation au rôle de l'IA dans les outils de correction/traduction. En 3e, étude critique du style généré par l'IA et maîtrise des prompts pour la créativité.</p>
+                </div>
+
+                <div class="reflection-prompt activity-idea">
+                    <h3>2. Idées d'Activités Concrètes</h3>
+                    <p class="subtitle">Proposez une ou deux idées d’activités concrètes permettant de faire découvrir l’IA ou de l’utiliser de manière pertinente et raisonnée dans le cadre de votre enseignement.</p>
+                    <p>Exemples :<br>
+                    - En Histoire-Géographie : Faire générer à l'IA le plan d'une dissertation, puis demander aux élèves de critiquer ce plan en identifiant ce qui manque et en le complétant manuellement.<br>
+                    - En Mathématiques : Utiliser l'IA pour créer des exercices, puis faire analyser aux élèves les limites et erreurs possibles de l'énoncé généré.
+                    </p>
+                </div>
+            </div>
+            
+            <button class="action-btn" style="background: linear-gradient(135deg, var(--accent-blue), #3a7bc8); box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);" onclick="goToSection(1)">Terminer l'Atelier et Retour à l'Accueil 🏠</button>
+        </div>
+    </div>
+
+    <script>
+        // Mapping des cas pour le QCM (Réponses correctes et feedback)
+        const qcmData = {
+            1: {
+                correct: 'C',
+                feedback: {
+                    title: "Principe de Responsabilité & Transparence (p. 10)",
+                    text: "L'approche privilégiée est la **refonte des modalités d'évaluation** pour se concentrer sur le processus et la critique plutôt que sur le produit final. Les détecteurs d'IA sont peu fiables et l'objectif doit rester formatif.",
+                    piliers: ["Transformer l'évaluation (p. 10)", "Exiger la justification et la critique du contenu généré (Principe 2 : Transparence)"]
+                }
+            },
+            2: {
+                correct: 'D',
+                feedback: {
+                    title: "Principe de Protection des Données (n°3)",
+                    text: "Le numéro d'identification (INE) est considéré comme une donnée personnelle indirecte. L'envoyer à un LLM public (non agréé et non conforme RGPD) constitue une **violation du Principe de Protection des Données** (Principe 3). La correction doit se faire avec des outils agréés ou sans aucune donnée permettant l'identification.",
+                    piliers: ["Interdiction d'entrer des données personnelles dans des outils non agréés (Principe 3)", "L'enseignant reste responsable de la validation finale (Principe 1 : Responsabilité)"]
+                }
+            },
+            3: {
+                correct: 'B',
+                feedback: {
+                    title: "Principe de Frugalité et Sobriété (n°5)",
+                    text: "L'usage de l'IA doit être **ciblé et justifié** (Principe 5). La meilleure approche combine la sensibilisation à l'impact (frugalité) et la formation à l'efficacité des prompts pour réduire la consommation d'énergie inutile.",
+                    piliers: ["Utilisation ciblée : valeur ajoutée pédagogique avérée (Principe 5)", "Former à l'efficacité numérique (Prompt engineering)"]
+                }
+            }
+        };
+
+
+        // Fonction pour gérer la navigation entre les sections
+        function goToSection(sectionNumber) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            const targetSection = document.getElementById('section' + sectionNumber);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                document.getElementById('section1').classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Fonction pour basculer le contenu des étapes (piliers éthiques)
+        function toggleStep(element) {
+            element.classList.toggle('active');
+        }
+
+        // Fonction pour soumettre le QCM et afficher le feedback
+        function submitQCM(caseNumber) {
+            const data = qcmData[caseNumber];
+            const formName = 'qcm' + caseNumber;
+            const feedbackArea = document.getElementById('feedback-' + caseNumber);
+            const selectedOption = document.querySelector(`input[name="${formName}"]:checked`);
+            
+            if (!selectedOption) {
+                feedbackArea.style.display = 'block';
+                feedbackArea.className = 'feedback-area incorrect';
+                feedbackArea.innerHTML = '<strong class="result">⚠️ Veuillez sélectionner une réponse avant de valider.</strong>';
+                return;
+            }
+
+            const userAnswer = selectedOption.value;
+            const isCorrect = (userAnswer === data.correct);
+            
+            feedbackArea.style.display = 'block';
+            feedbackArea.className = isCorrect ? 'feedback-area correct' : 'feedback-area incorrect';
+
+            let html = `<strong class="result">${isCorrect ? '✅ C’est la bonne réponse !' : '❌ Réponse incorrecte. L’approche conforme au Cadre est la réponse ' + data.correct + '.'}</strong>`;
+            
+            html += `<p class="explanation"><strong>${data.feedback.title} :</strong> ${data.feedback.text}</p>`;
+            
+            if (data.feedback.piliers && data.feedback.piliers.length > 0) {
+                html += '<ul>';
+                data.feedback.piliers.forEach(pilier => {
+                    html += `<li>${pilier}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            feedbackArea.innerHTML = html;
+        }
+
+        // --- LOGIQUE DU JEU DE CLASSIFICATION (PARTIE 1) AVEC GLISSER-DÉPOSER (DRAG & DROP) ---
+        
+        let draggedCapsule = null;
+
+        function handleDragStart(e) {
+            draggedCapsule = this;
+            this.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', this.dataset.riskId);
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedCapsule = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); 
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (e.target.closest('.capsule-container')) {
+                e.target.closest('.capsule-container').classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.closest('.capsule-container')) {
+                e.target.closest('.capsule-container').classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const targetContainer = e.target.closest('.capsule-container');
+            const feedbackMessage = document.getElementById('feedback-message');
+
+            if (!targetContainer) {
+                return;
+            }
+
+            const riskId = e.dataTransfer.getData('text/plain');
+            const capsuleToMove = document.querySelector(`.risk-capsule[data-risk-id="${riskId}"]`);
+            
+            if (capsuleToMove && targetContainer) {
+                targetContainer.appendChild(capsuleToMove);
+                capsuleToMove.removeAttribute('data-status');
+                
+                feedbackMessage.textContent = `Risque "${capsuleToMove.textContent.trim()}" déplacé.`;
+                feedbackMessage.style.color = 'var(--primary)';
+            }
+            
+            if (targetContainer) {
+                 targetContainer.classList.remove('drag-over');
+            }
+            
+            setTimeout(() => { feedbackMessage.textContent = ''; }, 2000);
+        }
+
+        function checkAnswers() {
+            let correctCount = 0;
+            const risks = document.querySelectorAll('#classification-game .risk-capsule');
+            const totalRisks = 6; 
+            const feedbackMessage = document.getElementById('feedback-message');
+
+            if (risks.length < totalRisks) {
+                feedbackMessage.textContent = `Veuillez placer les ${totalRisks - risks.length} risques restants avant de vérifier.`;
+                feedbackMessage.style.color = 'var(--accent-orange)';
+                return;
+            }
+
+            risks.forEach(capsule => {
+                const categoryBox = capsule.parentElement.closest('.category-box');
+                
+                if (!categoryBox || categoryBox.id === 'risk-source-area') {
+                    capsule.dataset.status = 'incorrect'; 
+                    return;
+                }
+                
+                const categoryId = categoryBox.dataset.categoryId;
+                const correctCategory = capsule.dataset.correctCategory;
+
+                if (categoryId === correctCategory) {
+                    capsule.dataset.status = 'correct';
+                    correctCount++;
+                } else {
+                    capsule.dataset.status = 'incorrect';
+                }
+            });
+
+            if (correctCount === totalRisks) {
+                feedbackMessage.innerHTML = `<span style="color: var(--primary-dark); font-size: 1.2em;">Félicitations ! ${correctCount}/${totalRisks} réponses correctes.</span>`;
+            } else {
+                feedbackMessage.innerHTML = `<span style="color: #e74c3c;">Résultat : ${correctCount}/${totalRisks} réponses correctes. Réessayez ! Les capsules incorrectes sont en rouge.</span>`;
+            }
+        }
+
+        function setupDragAndDropGame() {
+            const capsules = document.querySelectorAll('.risk-capsule');
+            const containers = document.querySelectorAll('.capsule-container');
+
+            capsules.forEach(capsule => {
+                capsule.addEventListener('dragstart', handleDragStart);
+                capsule.addEventListener('dragend', handleDragEnd);
+            });
+
+            containers.forEach(container => {
+                container.addEventListener('dragover', handleDragOver);
+                container.addEventListener('dragenter', handleDragEnter);
+                container.addEventListener('dragleave', handleDragLeave);
+                container.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            goToSection(1);
+            setupDragAndDropGame();
+        });
+    </script>
+</body>
+</html>
